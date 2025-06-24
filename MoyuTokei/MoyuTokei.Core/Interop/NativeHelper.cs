@@ -100,9 +100,8 @@ namespace MoyuTokei.Core.Interop
                 {
                     StructureSize = (uint)(Marshal.SizeOf<DisplayDevice>())
                 };
-                devInfo.StructureSize = (uint)(Marshal.SizeOf(devInfo));
 
-                UNM.EnumDisplayDevices(null, 0, ref devInfo, ConstantValues.EDD_GET_DEVICE_INTERFACE_NAME);
+                //UNM.EnumDisplayDevices(null, 0, ref devInfo, ConstantValues.EDD_GET_DEVICE_INTERFACE_NAME);
 
                 if (UNM.EnumDisplayDevices(devInfo.DeviceName, 0, ref devInfo, ConstantValues.EDD_GET_DEVICE_INTERFACE_NAME))
                 {
@@ -163,7 +162,7 @@ namespace MoyuTokei.Core.Interop
         /// <summary>
         /// Get monitor friendly name by adapter name retrieved by <see cref="GetMonitorInfo"/>.
         /// </summary>
-        /// <param name="gdiAdapterName">The adapter name of monitor.</param>
+        /// <param name="gdiAdapterName">The adapter name of the monitor.</param>
         /// <returns></returns>
         public static string GetMonitorFriendlyName(string gdiAdapterName)
         {

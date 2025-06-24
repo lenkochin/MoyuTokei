@@ -9,7 +9,6 @@
 		<PackageReference Include="Prism.Wpf" Version="8.1.97" />
 	</ItemGroup>
 	<ItemGroup>
-	  <ProjectReference Include="..\..\MoyuTokei.Common\MoyuTokei.Common.csproj" />
 	  <ProjectReference Include="..\MoyuTokei.Common\MoyuTokei.Common.csproj" />
 	  <ProjectReference Include="..\Services\MoyuTokei.Services.Interfaces\MoyuTokei.Services.Interfaces.csproj" />
 	</ItemGroup>

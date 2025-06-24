@@ -7,7 +7,6 @@
   </PropertyGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\..\MoyuTokei.Common\MoyuTokei.Common.csproj" />
 		<ProjectReference Include="..\..\MoyuTokei.Common\MoyuTokei.Common.csproj" />
 	</ItemGroup>
 

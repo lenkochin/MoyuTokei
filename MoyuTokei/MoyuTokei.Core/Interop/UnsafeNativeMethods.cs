@@ -102,7 +102,7 @@ namespace MoyuTokei.Core.Interop
         internal static extern bool GetTitleBarInfo(IntPtr hWnd, ref TitleBarInfo info);
 
         [LibraryImport(DllName.User32)]
-        public static partial IntPtr GetForegroundWindow();
+        internal static partial IntPtr GetForegroundWindow();
     }
 }
 
