@@ -1,0 +1,354 @@
+﻿<Window
+    x:Class="MoyuTokei.Views.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:b="clr-namespace:MoyuTokei.Behaviors"
+    xmlns:comm="clr-namespace:MoyuTokei.Common;assembly=MoyuTokei.Common"
+    xmlns:conv="clr-namespace:MoyuTokei.Converters"
+    xmlns:core="clr-namespace:MoyuTokei.Core;assembly=MoyuTokei.Core"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:prism="http://prismlibrary.com/"
+    xmlns:tray="clr-namespace:LenChon.Win32.TrayIcon;assembly=TrayIcon"
+    xmlns:vm="clr-namespace:MoyuTokei.ViewModels"
+    Title="MoyuTokei"
+    Width="395"
+    Height="250"
+    d:DataContext="{d:DesignInstance Type=vm:MainWindowViewModel}"
+    prism:ViewModelLocator.AutoWireViewModel="True"
+    AllowsTransparency="True"
+    Background="Transparent"
+    ResizeMode="NoResize"
+    ShowInTaskbar="False"
+    Topmost="True"
+    WindowStyle="None"
+    mc:Ignorable="d">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="Bool2VisConv"/>
+    </Window.Resources>
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding LoadCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"/>
+            <b:SnapToCornerAction SnapTo="RightBottom" UseAnimation="False"/>
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+    <i:Interaction.Behaviors>
+        <b:WindowDragMoveBehavior DragMoveCompletedCommand="{Binding DragMoveCompletedCommand}" SnapToEdge="True"/>
+        <b:WindowFunctionSwitchBehavior x:Name="BlurFunc" Function="BlurClientArea"/>
+        <b:WindowFunctionSwitchBehavior x:Name="ClickThroughFunc" Function="ClickThrough"/>
+    </i:Interaction.Behaviors>
+    <Grid>
+        <tray:TrayNotifyIcon IconPath="app.ico" TrayIconToolTip="Nice day">
+            <tray:TrayNotifyIcon.Resources>
+                <Style TargetType="TextBlock">
+                    <Setter Property="VerticalAlignment" Value="Center"/>
+                </Style>
+                <Style x:Key="IconStyles.ButtonBase" TargetType="ButtonBase">
+                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                    <Setter Property="VerticalContentAlignment" Value="Center"/>
+                    <Setter Property="Background" Value="Transparent"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="ButtonBase">
+                                <Label Background="{TemplateBinding Background}" Content="{TemplateBinding Content}"/>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                    <Style.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="SkyBlue"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter Property="Background" Value="Silver"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+                <Style BasedOn="{StaticResource IconStyles.ButtonBase}" TargetType="ToggleButton"/>
+                <Style BasedOn="{StaticResource IconStyles.ButtonBase}" TargetType="Button"/>
+            </tray:TrayNotifyIcon.Resources>
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="PreviewTrayPopupOpened">
+                    <i:InvokeCommandAction Command="{Binding PrepareForTrayPopupOpeningCommand}" PassEventArgsToCommand="True"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+            <Border
+                Name="Root"
+                Width="400"
+                Height="330"
+                Background="White"
+                BorderBrush="DeepSkyBlue"
+                BorderThickness="3"
+                CornerRadius="5">
+                <!--  Block the mouse event here to prevent unexpected WM_KILLFOCUS from triggering  -->
+                <i:Interaction.Behaviors>
+                    <b:BlockMouseEventBehavior/>
+                </i:Interaction.Behaviors>
+                <Border.Clip>
+                    <RectangleGeometry Rect="0,0,400,330">
+                        <RectangleGeometry.Transform>
+                            <ScaleTransform CenterX="{Binding TrayScalingCenterX}" CenterY="{Binding TrayScalingCenterY}" ScaleX="1" ScaleY="1"/>
+                        </RectangleGeometry.Transform>
+                    </RectangleGeometry>
+                </Border.Clip>
+                <DockPanel>
+                    <Button
+                        HorizontalAlignment="Right"
+                        Command="{Binding ExitApplicationCommand}"
+                        Content="不玩了！"
+                        DockPanel.Dock="Bottom"/>
+                    <StackPanel>
+                        <TextBlock
+                            FontSize="20"
+                            IsHitTestVisible="False"
+                            Text="设置区"/>
+                        <WrapPanel Margin="3,10,3,3">
+                            <CheckBox
+                                VerticalContentAlignment="Center"
+                                Content="允许移动位置"
+                                IsChecked="{Binding ElementName=ClickThroughFunc, Path=Enable, Converter={x:Static conv:ReverseBoolConverter.Instance}, Mode=TwoWay}"/>
+                            <CheckBox
+                                Margin="10,0,0,0"
+                                VerticalContentAlignment="Center"
+                                Content="看不清的话尝尝啊不对试试这个"
+                                IsChecked="{Binding ElementName=BlurFunc, Path=Enable, Mode=OneWayToSource}"/>
+                        </WrapPanel>
+                        <WrapPanel Margin="6">
+                            <RadioButton
+                                Name="RadioButtonDefault"
+                                VerticalContentAlignment="Center"
+                                Command="{Binding SwitchJudgementModeCommand}"
+                                Content="鼠标放置模式"
+                                GroupName="JudgmentModeGroup"
+                                IsChecked="True"
+                                ToolTip="移入或移出鼠标切换模式">
+                                <RadioButton.CommandParameter>
+                                    <comm:JudgmentMode>MouseListening</comm:JudgmentMode>
+                                </RadioButton.CommandParameter>
+                            </RadioButton>
+                        </WrapPanel>
+                        <WrapPanel Margin="6">
+                            <WrapPanel.Resources>
+                                <Style
+                                    x:Key="ToggleButton.ClickMode"
+                                    BasedOn="{StaticResource IconStyles.ButtonBase}"
+                                    TargetType="ToggleButton">
+                                    <Setter Property="Content" Value="该干活了Q^Q"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Mode}" Value="Jixue">
+                                            <Setter Property="Content" Value="摸个鱼QvQ"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </WrapPanel.Resources>
+                            <RadioButton
+                                Name="RadioButtonClickMode"
+                                VerticalContentAlignment="Center"
+                                Command="{Binding SwitchJudgementModeCommand}"
+                                Content="点击模式"
+                                GroupName="JudgmentModeGroup"
+                                ToolTip="选择后切换至点击模式">
+                                <RadioButton.CommandParameter>
+                                    <comm:JudgmentMode>ClickSwitch</comm:JudgmentMode>
+                                </RadioButton.CommandParameter>
+                            </RadioButton>
+                            <ToggleButton
+                                Margin="3,0"
+                                VerticalAlignment="Center"
+                                Command="{Binding SwitchTokeiModeCommand}"
+                                Style="{StaticResource ToggleButton.ClickMode}"
+                                Visibility="{Binding ElementName=RadioButtonClickMode, Path=IsChecked, Converter={StaticResource Bool2VisConv}}"/>
+                        </WrapPanel>
+                        <WrapPanel Margin="6">
+                            <RadioButton
+                                Name="RadioButtonLockMode"
+                                VerticalAlignment="Center"
+                                Command="{Binding SwitchJudgementModeCommand}"
+                                Content="锁定模式"
+                                GroupName="JudgmentModeGroup">
+                                <RadioButton.CommandParameter>
+                                    <comm:JudgmentMode>WorkerCapturing</comm:JudgmentMode>
+                                </RadioButton.CommandParameter>
+                                <RadioButton.ToolTip>
+                                    <ToolTip Placement="Right">
+                                        <TextBlock>
+                                            锁定目标程序，当其处于激活状态时将进入鸡血模式<LineBreak/>
+                                            方法：<LineBreak/>
+                                            1:点击开始捕获（如果需要重新锁定同样点击该按钮）<LineBreak/>
+                                            2:选择视为工作应用的程序</TextBlock>
+                                    </ToolTip>
+                                </RadioButton.ToolTip>
+                            </RadioButton>
+                            <Button
+                                Margin="3,0"
+                                VerticalAlignment="Center"
+                                Command="{Binding StartCapturingApplicationCommand}"
+                                Content="开始捕获"
+                                Visibility="{Binding ElementName=RadioButtonLockMode, Path=IsChecked, Converter={StaticResource Bool2VisConv}}"/>
+                        </WrapPanel>
+                        <DockPanel>
+                            <TextBlock
+                                Margin="3"
+                                DockPanel.Dock="Left"
+                                Text="不透明度"/>
+                            <Slider
+                                AutoToolTipPlacement="TopLeft"
+                                AutoToolTipPrecision="2"
+                                DockPanel.Dock="Right"
+                                IsMoveToPointEnabled="True"
+                                Maximum="1"
+                                Minimum="0.2"
+                                TickFrequency="0.1"
+                                TickPlacement="BottomRight"
+                                Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}, Path=Opacity}"/>
+                        </DockPanel>
+                        <WrapPanel>
+                            <TextBlock Margin="3" Text="所在显示器"/>
+                            <TextBlock Foreground="Gray" Text="{Binding MonitorName}"/>
+                        </WrapPanel>
+                        <WrapPanel>
+                            <TextBlock Margin="3" Text="快速摆放"/>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="auto"/>
+                                    <ColumnDefinition Width="auto"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="auto"/>
+                                </Grid.RowDefinitions>
+                                <Button
+                                    Grid.Row="0"
+                                    Grid.Column="0"
+                                    Content="↖">
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="Click">
+                                            <b:SnapToCornerAction SnapTo="LeftTop"/>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </Button>
+                                <Button
+                                    Grid.Row="0"
+                                    Grid.Column="1"
+                                    Content="↗">
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="Click">
+                                            <b:SnapToCornerAction SnapTo="RightTop"/>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </Button>
+                                <Button
+                                    Grid.Row="1"
+                                    Grid.Column="0"
+                                    Content="↙">
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="Click">
+                                            <b:SnapToCornerAction SnapTo="LeftBottom"/>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </Button>
+                                <Button
+                                    Grid.Row="1"
+                                    Grid.Column="1"
+                                    Content="↘">
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="Click">
+                                            <b:SnapToCornerAction SnapTo="RightBottom"/>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </Button>
+                            </Grid>
+                        </WrapPanel>
+                        <WrapPanel>
+                            <Button Command="{Binding ResetCommand}" Content="没眼看。。重来吧！"/>
+                            <Button
+                                Command="{Binding RenderCommand}"
+                                CommandParameter="{Binding ElementName=ContentRegion}"
+                                Content="生成结果（按Ctrl+V粘贴获取"/>
+                        </WrapPanel>
+                    </StackPanel>
+                </DockPanel>
+            </Border>
+            <tray:TrayNotifyIcon.TrayPopupOpeningAnimation>
+                <Storyboard Storyboard.TargetName="Root">
+                    <DoubleAnimation
+                        Storyboard.TargetProperty="Clip.Transform.ScaleX"
+                        From="0"
+                        To="1"
+                        Duration="0:0:0.8">
+                        <DoubleAnimation.EasingFunction>
+                            <PowerEase EasingMode="EaseInOut" Power="5"/>
+                        </DoubleAnimation.EasingFunction>
+                    </DoubleAnimation>
+                    <DoubleAnimation
+                        Storyboard.TargetProperty="Clip.Transform.ScaleY"
+                        From="0"
+                        To="1"
+                        Duration="0:0:0.8">
+                        <DoubleAnimation.EasingFunction>
+                            <PowerEase EasingMode="EaseInOut" Power="5"/>
+                        </DoubleAnimation.EasingFunction>
+                    </DoubleAnimation>
+                    <DoubleAnimation
+                        Storyboard.TargetName="Root"
+                        Storyboard.TargetProperty="Clip.RadiusX"
+                        From="200"
+                        To="0"
+                        Duration="0:0:0.8">
+                        <DoubleAnimation.EasingFunction>
+                            <PowerEase EasingMode="EaseInOut" Power="5"/>
+                        </DoubleAnimation.EasingFunction>
+                    </DoubleAnimation>
+                    <DoubleAnimation
+                        Storyboard.TargetName="Root"
+                        Storyboard.TargetProperty="Clip.RadiusY"
+                        From="200"
+                        To="0"
+                        Duration="0:0:0.8">
+                        <DoubleAnimation.EasingFunction>
+                            <PowerEase EasingMode="EaseInOut" Power="5"/>
+                        </DoubleAnimation.EasingFunction>
+                    </DoubleAnimation>
+                </Storyboard>
+            </tray:TrayNotifyIcon.TrayPopupOpeningAnimation>
+            <tray:TrayNotifyIcon.TrayPopupClosingAnimation>
+                <Storyboard Storyboard.TargetName="Root">
+                    <DoubleAnimation
+                        Storyboard.TargetProperty="Clip.Transform.ScaleX"
+                        To="0"
+                        Duration="0:0:0.8">
+                        <DoubleAnimation.EasingFunction>
+                            <PowerEase EasingMode="EaseInOut" Power="5"/>
+                        </DoubleAnimation.EasingFunction>
+                    </DoubleAnimation>
+                    <DoubleAnimation
+                        Storyboard.TargetProperty="Clip.Transform.ScaleY"
+                        To="0"
+                        Duration="0:0:0.8">
+                        <DoubleAnimation.EasingFunction>
+                            <PowerEase EasingMode="EaseInOut" Power="5"/>
+                        </DoubleAnimation.EasingFunction>
+                    </DoubleAnimation>
+                    <DoubleAnimation
+                        Storyboard.TargetProperty="Clip.RadiusX"
+                        To="200"
+                        Duration="0:0:0.8">
+                        <DoubleAnimation.EasingFunction>
+                            <PowerEase EasingMode="EaseInOut" Power="5"/>
+                        </DoubleAnimation.EasingFunction>
+                    </DoubleAnimation>
+                    <DoubleAnimation
+                        Storyboard.TargetProperty="Clip.RadiusY"
+                        From="0"
+                        To="200"
+                        Duration="0:0:0.8">
+                        <DoubleAnimation.EasingFunction>
+                            <PowerEase EasingMode="EaseInOut" Power="5"/>
+                        </DoubleAnimation.EasingFunction>
+                    </DoubleAnimation>
+                </Storyboard>
+            </tray:TrayNotifyIcon.TrayPopupClosingAnimation>
+        </tray:TrayNotifyIcon>
+        <ContentControl Name="ContentRegion" prism:RegionManager.RegionName="{x:Static core:RegionNames.ContentRegion}"/>
+    </Grid>
+</Window>

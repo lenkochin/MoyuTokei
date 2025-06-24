@@ -1,0 +1,3 @@
+[submodule "MoyuTokei/External/TrayIcon"]
+	path = MoyuTokei/External/TrayIcon
+	url = https://github.com/lenkochin/TrayIcon.git

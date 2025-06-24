@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows10.0.22000.0</TargetFramework>
+    <OutputType>Library</OutputType>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\..\MoyuTokei.Common\MoyuTokei.Common.csproj" />
+		<ProjectReference Include="..\..\MoyuTokei.Common\MoyuTokei.Common.csproj" />
+	</ItemGroup>
+
+</Project>

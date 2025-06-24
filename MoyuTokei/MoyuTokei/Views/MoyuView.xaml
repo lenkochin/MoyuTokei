@@ -1,0 +1,85 @@
+﻿<UserControl
+    x:Class="MoyuTokei.Views.MoyuView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:b="clr-namespace:MoyuTokei.Behaviors"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+    xmlns:local="clr-namespace:MoyuTokei.Views"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:prism="http://prismlibrary.com/"
+    xmlns:vm="clr-namespace:MoyuTokei.ViewModels"
+    d:DataContext="{d:DesignInstance Type=vm:MoyuViewModel}"
+    prism:ViewModelLocator.AutoWireViewModel="True"
+    Background="#67FFFFFF"
+    mc:Ignorable="d">
+    <UserControl.Resources>
+        <Style TargetType="local:MoyuView">
+            <Setter Property="Foreground" Value="DeepSkyBlue"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Mode}" Value="Jixue">
+                    <Setter Property="Foreground" Value="OrangeRed"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding LoadedCommand}"/>
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+    <i:Interaction.Behaviors>
+        <b:MouseListeningBehavior
+            JudgmentMode="{Binding JudgmentMode}"
+            MouseEnterCommand="{Binding MouseEnterCommand}"
+            MouseLeaveCommand="{Binding MouseLeaveCommand}"/>
+    </i:Interaction.Behaviors>
+    <Border BorderBrush="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}, Path=Foreground}" BorderThickness="2">
+        <Canvas d:TextBlock.Foreground="DeepSkyBlue" TextBlock.Foreground="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}, Path=Foreground}">
+            <TextBlock
+                Canvas.Left="32"
+                Canvas.Top="10"
+                d:Text="摸鱼"
+                FontSize="80"
+                Text="{Binding ModeDescription, Mode=OneWay}"/>
+            <TextBlock
+                Canvas.Left="217"
+                Canvas.Top="21"
+                d:Text="00"
+                FontSize="80"
+                Tag="Hour"
+                Text="{Binding Duration.Hours, StringFormat={}{0:00}}"/>
+            <TextBlock
+                Canvas.Left="320"
+                Canvas.Top="15"
+                Width="44"
+                FontSize="40"
+                Text="小时"
+                TextWrapping="Wrap"/>
+            <TextBlock
+                Canvas.Left="208"
+                Canvas.Top="121"
+                d:Text="00"
+                FontSize="50"
+                Tag="Minute"
+                Text="{Binding Duration.Minutes, StringFormat={}{0:00}}"/>
+            <TextBlock
+                Canvas.Left="278"
+                Canvas.Top="127"
+                FontSize="40"
+                Text="分钟"/>
+            <TextBlock
+                Canvas.Left="32"
+                Canvas.Top="96"
+                d:Text="00"
+                FontSize="130"
+                Tag="Second"
+                Text="{Binding Duration.Seconds, StringFormat={}{0:00}}"/>
+            <TextBlock
+                Canvas.Left="208"
+                Canvas.Top="172"
+                FontSize="50"
+                Text="秒"/>
+        </Canvas>
+    </Border>
+</UserControl>

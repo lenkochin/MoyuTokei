@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows10.0.22000.0</TargetFramework>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\MoyuTokei.Common\MoyuTokei.Common.csproj" />
+    <ProjectReference Include="..\..\MoyuTokei.Common\MoyuTokei.Common.csproj" />
+    <ProjectReference Include="..\MoyuTokei.Services.Interfaces\MoyuTokei.Services.Interfaces.csproj" />
+  </ItemGroup>
+
+</Project>
