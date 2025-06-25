@@ -97,7 +97,7 @@
                         Command="{Binding ExitApplicationCommand}"
                         Content="不玩了！"
                         DockPanel.Dock="Bottom"/>
-                    <StackPanel>
+                    <StackPanel Margin="6">
                         <TextBlock
                             FontSize="20"
                             IsHitTestVisible="False"
